@@ -1,0 +1,56 @@
+name: Sync WLOC Upstream
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-wloc.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch current maintained WLOC
+        run: |
+          rm -rf /tmp/wloc-upstream
+          git clone --depth 1 https://github.com/zxishere/wloc.git /tmp/wloc-upstream
+
+      - name: Copy self-hosted files
+        run: |
+          cp /tmp/wloc-upstream/wloc.js ./wloc.js
+          cp /tmp/wloc-upstream/wloc-settings.js ./wloc-settings.js
+          cp /tmp/wloc-upstream/wloc.sgmodule ./wloc.sgmodule
+          [ -f /tmp/wloc-upstream/index.html ] && cp /tmp/wloc-upstream/index.html ./index.html || true
+          [ -f /tmp/wloc-upstream/LICENSE ] && cp /tmp/wloc-upstream/LICENSE ./LICENSE || true
+          [ -f "/tmp/wloc-upstream/使用教程.md" ] && cp "/tmp/wloc-upstream/使用教程.md" "./使用教程.md" || true
+          if [ -d /tmp/wloc-upstream/images ]; then
+            rm -rf ./images
+            cp -R /tmp/wloc-upstream/images ./images
+          fi
+
+      - name: Rewrite URLs to roninriddle/wloc
+        run: |
+          sed -i 's#https://raw.githubusercontent.com/zxishere/wloc/main#https://raw.githubusercontent.com/roninriddle/wloc/main#g' wloc.sgmodule
+          sed -i 's#https://github.com/zxishere/wloc#https://github.com/roninriddle/wloc#g' wloc.sgmodule
+          sed -i 's#https://zxishere.github.io/wloc/#https://roninriddle.github.io/wloc/#g' wloc.sgmodule
+          if [ -f index.html ]; then
+            sed -i 's#https://raw.githubusercontent.com/zxishere/wloc/main#https://raw.githubusercontent.com/roninriddle/wloc/main#g' index.html || true
+          fi
+
+      - name: Commit synchronized files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add wloc.js wloc-settings.js wloc.sgmodule index.html LICENSE "使用教程.md" images 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo 'Already up to date.'
+          else
+            git commit -m 'sync: update WLOC self-hosted files'
+            git push
+          fi
