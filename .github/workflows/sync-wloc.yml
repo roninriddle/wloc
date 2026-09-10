@@ -25,7 +25,6 @@ jobs:
         run: |
           cp /tmp/wloc-upstream/wloc.js ./wloc.js
           cp /tmp/wloc-upstream/wloc-settings.js ./wloc-settings.js
-          cp /tmp/wloc-upstream/wloc.sgmodule ./wloc.sgmodule
           [ -f /tmp/wloc-upstream/index.html ] && cp /tmp/wloc-upstream/index.html ./index.html || true
           [ -f /tmp/wloc-upstream/LICENSE ] && cp /tmp/wloc-upstream/LICENSE ./LICENSE || true
           [ -f "/tmp/wloc-upstream/使用教程.md" ] && cp "/tmp/wloc-upstream/使用教程.md" "./使用教程.md" || true
@@ -34,13 +33,29 @@ jobs:
             cp -R /tmp/wloc-upstream/images ./images
           fi
 
-      - name: Rewrite URLs to roninriddle/wloc
+      - name: Write Surge-compatible self-hosted module
         run: |
-          sed -i 's#https://raw.githubusercontent.com/zxishere/wloc/main#https://raw.githubusercontent.com/roninriddle/wloc/main#g' wloc.sgmodule
-          sed -i 's#https://github.com/zxishere/wloc#https://github.com/roninriddle/wloc#g' wloc.sgmodule
-          sed -i 's#https://zxishere.github.io/wloc/#https://roninriddle.github.io/wloc/#g' wloc.sgmodule
+          cat > wloc.sgmodule <<'EOF'
+          #!name=Apple WLOC 定位修改
+          #!desc=修改 Apple 网络定位返回坐标 | 选点页面: https://roninriddle.github.io/wloc/
+          #!homepage=https://github.com/roninriddle/wloc
+          #!category=Tools
+          #!arguments=longitude:113.94114,latitude:22.544577,accuracy:25,randomRadius:0,logLevel:info
+          #!arguments-desc=经度/纬度: 默认坐标(在线选点储存后优先)\n精度: GPS精度(米)\n扰动半径: 每次响应在目标点周围随机偏移的最大距离(米)，0为关闭\n日志级别: off/error/warn/info/debug/all\n\n使用方法: 打开选点页面 -> 选位置 -> 储存到设备
+
+          [Script]
+          Apple WLOC = type=http-response, pattern="^https?:\/\/(?:gs-loc(?:-cn)?\.apple\.com|gsp-ssl\.ls\.apple\.com|bluedot\.is\.autonavi\.com(?:\.gds\.alibabadns\.com)?)\/clls\/wloc", requires-body=1, binary-body-mode=1, max-size=0, timeout=30, script-path=https://raw.githubusercontent.com/roninriddle/wloc/main/wloc.js, argument=longitude={{{longitude}}}&latitude={{{latitude}}}&accuracy={{{accuracy}}}&randomRadius={{{randomRadius}}}&logLevel={{{logLevel}}}
+          WLOC Settings = type=http-request, pattern="^https?:\/\/gs-loc(?:-cn)?\.apple\.com\/wloc-settings\/save", requires-body=0, max-size=0, timeout=10, script-path=https://raw.githubusercontent.com/roninriddle/wloc/main/wloc-settings.js
+
+          [MITM]
+          hostname = %INSERT% gs-loc.apple.com, gs-loc-cn.apple.com, gsp-ssl.ls.apple.com, bluedot.is.autonavi.com, bluedot.is.autonavi.com.gds.alibabadns.com
+          EOF
+
+      - name: Rewrite self-hosted page references
+        run: |
           if [ -f index.html ]; then
             sed -i 's#https://raw.githubusercontent.com/zxishere/wloc/main#https://raw.githubusercontent.com/roninriddle/wloc/main#g' index.html || true
+            sed -i 's#https://zxishere.github.io/wloc/#https://roninriddle.github.io/wloc/#g' index.html || true
           fi
 
       - name: Commit synchronized files
