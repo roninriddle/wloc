@@ -3,329 +3,58 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>WLOC 选点</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#0071e3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WLOC">
+<title>WLOC 控制台</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon.svg">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{
-  --bg:#f5f5f7; --card:#fff; --fg:#1d1d1f; --muted:#6e6e73; --line:#e3e3e6;
-  --accent:#0071e3; --ok:#1a9c4b; --warn:#c2410c; --danger:#d92c20;
-}
-@media (prefers-color-scheme:dark){
-  :root{--bg:#000; --card:#1c1c1e; --fg:#f5f5f7; --muted:#98989d; --line:#2c2c2e; --accent:#0a84ff;}
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);
-  font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
-#map{height:46vh;min-height:280px;width:100%}
-.wrap{max-width:640px;margin:0 auto;padding:12px 16px 40px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
-h2{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 10px;letter-spacing:.04em}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row>*{flex:1 1 0;min-width:0}
-input,button,select{font:inherit;border-radius:10px;border:1px solid var(--line);padding:10px 12px;
-  background:var(--card);color:var(--fg);width:100%}
-input[readonly]{background:var(--bg);color:var(--muted)}
-button{cursor:pointer;border:none;background:var(--bg);font-weight:500}
-button.primary{background:var(--accent);color:#fff}
-button.danger{background:var(--danger);color:#fff}
-button:active{opacity:.7}
-.hint{font-size:12px;color:var(--muted);margin-top:8px}
-.pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:99px;background:var(--bg);color:var(--muted)}
-.pill.ok{background:rgba(26,156,75,.14);color:var(--ok)}
-.pill.bad{background:rgba(217,44,32,.12);color:var(--danger)}
-.out{font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
-  word-break:break-all;white-space:pre-wrap;margin-top:10px}
-.layers{position:absolute;top:10px;right:10px;z-index:500;display:flex;gap:4px;
-  background:var(--card);border-radius:10px;padding:4px;box-shadow:0 1px 6px rgba(0,0,0,.2)}
-.layers button{padding:5px 10px;font-size:12px;border-radius:7px;width:auto;flex:none}
-.layers button.on{background:var(--accent);color:#fff}
-.maprel{position:relative}
-.fav{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
-.fav:last-child{border-bottom:none}
-.fav span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
-.fav button{width:auto;flex:none;padding:6px 10px;font-size:12px}
-.dev-pop{font-size:13px;line-height:1.5}
+:root{--bg:#f5f5f7;--card:#fff;--fg:#1d1d1f;--muted:#6e6e73;--line:#e3e3e6;--accent:#0071e3;--ok:#1a9c4b;--warn:#c77700;--danger:#d92c20;--soft:#f2f2f7}
+@media(prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--fg:#f5f5f7;--muted:#98989d;--line:#2c2c2e;--accent:#0a84ff;--soft:#2c2c2e}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+#map{height:44vh;min-height:300px;width:100%}.wrap{max-width:680px;margin:0 auto;padding:12px 16px calc(36px + env(safe-area-inset-bottom))}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+h2{font-size:13px;font-weight:650;color:var(--muted);margin:0 0 10px;letter-spacing:.04em}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1 1 0;min-width:0}
+input,button{font:inherit;border-radius:11px;border:1px solid var(--line);padding:10px 12px;background:var(--card);color:var(--fg);width:100%}button{cursor:pointer;border:none;background:var(--soft);font-weight:600}button.primary{background:var(--accent);color:#fff}button.danger{background:var(--danger);color:#fff}button:disabled{opacity:.5;cursor:default}button:active:not(:disabled){opacity:.72}
+.hint{font-size:12px;color:var(--muted);margin-top:8px}.out{font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);word-break:break-all;white-space:pre-wrap;margin-top:10px}.pill{display:inline-block;font-size:12px;padding:3px 9px;border-radius:99px;background:var(--soft);color:var(--muted)}.pill.ok{background:rgba(26,156,75,.14);color:var(--ok)}.pill.warn{background:rgba(199,119,0,.14);color:var(--warn)}.pill.bad{background:rgba(217,44,32,.12);color:var(--danger)}
+.maprel{position:relative}.layers{position:absolute;top:10px;right:10px;z-index:500;display:flex;gap:4px;background:var(--card);border-radius:10px;padding:4px;box-shadow:0 1px 6px rgba(0,0,0,.2)}.layers button{padding:5px 10px;font-size:12px;border-radius:7px;width:auto}.layers button.on{background:var(--accent);color:#fff}
+.status-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:var(--soft);border-radius:12px;padding:10px}.stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}.stat b{font-size:13px;font-weight:650;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stat b.ok{color:var(--ok)}.stat b.warn{color:var(--warn)}.stat b.bad{color:var(--danger)}
+.guide{display:grid;gap:8px}.guide-row{display:flex;align-items:flex-start;gap:10px;background:var(--soft);border-radius:12px;padding:10px 12px}.guide-row input{width:20px;height:20px;margin:1px 0 0;flex:0 0 20px}.guide-row div{flex:1}.guide-row strong{display:block;font-size:14px}.guide-row span{display:block;font-size:12px;color:var(--muted);margin-top:2px}.guide-actions{display:flex;gap:8px;margin-top:10px}.guide-actions button{flex:1}
+.fav{display:flex;align-items:center;gap:7px;padding:9px 0;border-bottom:1px solid var(--line)}.fav:last-child{border-bottom:none}.fav-main{flex:1;text-align:left;background:transparent;padding:4px 0;min-width:0}.fav-title{display:flex;align-items:center;gap:6px;min-width:0}.fav-name{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fav-coord{font-size:11px;color:var(--muted);margin-top:2px}.fav button.small{width:auto;flex:none;padding:7px 10px;font-size:12px}.dev-pop{font-size:13px;line-height:1.5}.install{display:none}.footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 0 0}
+@media(max-width:430px){.status-grid{grid-template-columns:1fr}#map{height:41vh;min-height:275px}}
 </style>
 </head>
 <body>
-
-<div class="maprel">
-  <div id="map"></div>
-  <div class="layers">
-    <button data-layer="osm" class="on">标准</button>
-    <button data-layer="sat">卫星</button>
-    <button data-layer="gaode">高德</button>
-  </div>
-</div>
-
+<div class="maprel"><div id="map"></div><div class="layers"><button data-layer="osm" class="on">标准</button><button data-layer="sat">卫星</button><button data-layer="gaode">高德</button></div></div>
 <div class="wrap">
-
-  <div class="card">
-    <h2>目标坐标 <span id="status" class="pill">检测中…</span></h2>
-    <div class="row">
-      <input id="lat" placeholder="纬度 latitude" inputmode="decimal">
-      <input id="lon" placeholder="经度 longitude" inputmode="decimal">
-    </div>
-    <div class="row" style="margin-top:8px">
-      <input id="acc" placeholder="精度(米)" inputmode="numeric" value="25">
-      <input id="rnd" placeholder="扰动半径(米)" inputmode="numeric" value="0">
-    </div>
-    <div class="row" style="margin-top:10px">
-      <button class="primary" id="save">储存到设备</button>
-      <button id="star">收藏</button>
-    </div>
-    <div class="row" style="margin-top:8px">
-      <button id="query">查询当前</button>
-      <button class="danger" id="clear">恢复真实定位</button>
-    </div>
-    <div class="out" id="out">点地图选点，或直接填经纬度。</div>
-  </div>
-
-  <div class="card">
-    <h2>设备当前定位</h2>
-    <div class="row">
-      <button id="locate">读取设备定位（并催一次刷新）</button>
-    </div>
-    <div class="out" id="devout">点上面按钮，看 iPhone 此刻认为自己在哪。和目标点差几十米以内 = 已生效。</div>
-  </div>
-
-  <div class="card">
-    <h2>搜索 / 粘贴</h2>
-    <div class="row">
-      <input id="q" placeholder="地名，或 35.6586,139.7454">
-      <button id="go" style="flex:0 0 72px">走</button>
-    </div>
-    <div class="hint">地名搜索直连 OpenStreetMap Nominatim。坐标文本按「纬度,经度」解析。</div>
-  </div>
-
-  <div class="card">
-    <h2>收藏</h2>
-    <div id="favs"></div>
-  </div>
-
-  <div class="hint" style="text-align:center">
-    需要先在小火箭里启用 wloc 模块并开启 HTTPS 解密。<br>
-    改完坐标要关开一次定位服务；iOS 26+ 需重启设备清缓存。
-  </div>
+  <div class="card install" id="installCard"><h2>添加到主屏幕</h2><div class="hint" style="margin-top:0">Safari → 分享 → 添加到主屏幕。之后会以独立 WLOC App 方式打开。</div></div>
+  <div class="card"><h2>状态总览</h2><div class="status-grid"><div class="stat"><small>模块连接</small><b id="moduleState">检测中…</b></div><div class="stat"><small>已保存目标</small><b id="targetState">检测中…</b></div><div class="stat"><small>系统定位</small><b id="deviceState">未验证</b></div></div><div class="row" style="margin-top:10px"><button id="query">刷新状态</button><button class="primary" id="locate">验证系统定位</button></div><div class="out" id="statusOut">正在检查 WLOC 模块和保存坐标…</div></div>
+  <div class="card"><h2>目标坐标 <span id="status" class="pill">检测中…</span></h2><div class="row"><input id="lat" placeholder="纬度 latitude" inputmode="decimal"><input id="lon" placeholder="经度 longitude" inputmode="decimal"></div><div class="row" style="margin-top:8px"><input id="acc" placeholder="精度(米)" inputmode="numeric" value="25"><input id="rnd" placeholder="扰动半径(米)" inputmode="numeric" value="0"></div><div class="row" style="margin-top:10px"><button class="primary" id="save">写入设备</button><button id="star">收藏</button></div><div class="row" style="margin-top:8px"><button class="danger" id="clear">恢复真实定位</button></div><div class="out" id="out">点地图选点，或直接填经纬度。</div></div>
+  <div class="card"><h2>iOS 26+ 切换向导</h2><div class="guide"><label class="guide-row"><input type="checkbox" id="g1" disabled><div><strong>1. 坐标已写入设备</strong><span id="g1text">等待检测</span></div></label><label class="guide-row"><input type="checkbox" id="g2"><div><strong>2. 关闭定位服务</strong><span>设置 → 隐私与安全性 → 定位服务。</span></div></label><label class="guide-row"><input type="checkbox" id="g3"><div><strong>3. 重启 iPhone</strong><span>用于清理 iOS 26+ 的 locationd 内存缓存。</span></div></label><label class="guide-row"><input type="checkbox" id="g4"><div><strong>4. 开机后先启动 Surge</strong><span>确认 Surge 已连接、脚本与 MitM 正常。</span></div></label><label class="guide-row"><input type="checkbox" id="g5"><div><strong>5. 再开启定位服务</strong><span>让系统在 WLOC 已接管后重新获取网络定位。</span></div></label><label class="guide-row"><input type="checkbox" id="g6" disabled><div><strong>6. 验证系统定位</strong><span id="g6text">点击下方验证，自动比较系统定位与目标点。</span></div></label></div><div class="guide-actions"><button class="primary" id="guideVerify">验证定位</button><button id="guideReset">重置步骤</button></div><div class="hint" id="guideHint">iOS 26+ 建议完整执行一次；如果系统 GPS 很强，网络定位可能被 GPS 覆盖。</div></div>
+  <div class="card"><h2>搜索 / 粘贴</h2><div class="row"><input id="q" placeholder="地名，或 22.1987,113.5439"><button id="go" style="flex:0 0 72px">走</button></div><div class="hint">地名搜索使用 OpenStreetMap Nominatim；坐标文本按「纬度,经度」解析。</div></div>
+  <div class="card"><h2>收藏</h2><div id="favs"></div><div class="hint">点收藏名称只预览；点“使用”会直接写入设备，无需再点上方“写入设备”。</div></div>
+  <div class="footer"><div>WLOC 控制台 <span id="uiVersion"></span></div><div id="upstreamInfo"></div></div>
 </div>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ---------- GCJ-02 <-> WGS-84 ----------
-const PI=Math.PI, A=6378245.0, EE=0.00669342162296594323;
-const outOfChina=(lat,lon)=>!(lon>73.66&&lon<135.05&&lat>3.86&&lat<53.55);
-function tLat(x,y){let r=-100+2*x+3*y+.2*y*y+.1*x*y+.2*Math.sqrt(Math.abs(x));
-  r+=(20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;
-  r+=(20*Math.sin(y*PI)+40*Math.sin(y/3*PI))*2/3;
-  r+=(160*Math.sin(y/12*PI)+320*Math.sin(y*PI/30))*2/3;return r}
-function tLon(x,y){let r=300+x+2*y+.1*x*x+.1*x*y+.1*Math.sqrt(Math.abs(x));
-  r+=(20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;
-  r+=(20*Math.sin(x*PI)+40*Math.sin(x/3*PI))*2/3;
-  r+=(150*Math.sin(x/12*PI)+300*Math.sin(x/30*PI))*2/3;return r}
-function wgs2gcj(lat,lon){
-  if(outOfChina(lat,lon))return[lat,lon];
-  let dLat=tLat(lon-105,lat-35), dLon=tLon(lon-105,lat-35);
-  const rad=lat/180*PI; let m=Math.sin(rad); m=1-EE*m*m;
-  const sq=Math.sqrt(m);
-  dLat=(dLat*180)/((A*(1-EE))/(m*sq)*PI);
-  dLon=(dLon*180)/(A/sq*Math.cos(rad)*PI);
-  return[lat+dLat,lon+dLon];
-}
-function gcj2wgs(lat,lon){
-  if(outOfChina(lat,lon))return[lat,lon];
-  let wLat=lat,wLon=lon;
-  for(let i=0;i<3;i++){const[g1,g2]=wgs2gcj(wLat,wLon);wLat+=lat-g1;wLon+=lon-g2}
-  return[wLat,wLon];
-}
-
-// ---------- map ----------
-const tiles={
-  osm:L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}),
-  sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}),
-  gaode:L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',{subdomains:'1234',maxZoom:19,attribution:'© 高德'})
-};
-let mode='osm';                      // gaode 图层坐标系是 GCJ-02
-const map=L.map('map',{zoomControl:true}).setView([35.6586,139.7454],13);
-tiles.osm.addTo(map);
-const marker=L.marker([35.6586,139.7454],{draggable:true}).addTo(map);
-
-const $=id=>document.getElementById(id);
-const isGcj=()=>mode==='gaode';
-// 显示坐标 -> 真实 WGS84
-const toWgs=(lat,lon)=>isGcj()?gcj2wgs(lat,lon):[lat,lon];
-// 真实 WGS84 -> 显示坐标
-const toDisp=(lat,lon)=>isGcj()?wgs2gcj(lat,lon):[lat,lon];
-
-function setFromDisplay(lat,lon){
-  const[w1,w2]=toWgs(lat,lon);
-  $('lat').value=w1.toFixed(6); $('lon').value=w2.toFixed(6);
-  marker.setLatLng([lat,lon]);
-}
-function setFromWgs(lat,lon,fly){
-  $('lat').value=(+lat).toFixed(6); $('lon').value=(+lon).toFixed(6);
-  const[d1,d2]=toDisp(+lat,+lon);
-  marker.setLatLng([d1,d2]);
-  if(fly)map.setView([d1,d2],Math.max(map.getZoom(),15));
-}
-map.on('click',e=>setFromDisplay(e.latlng.lat,e.latlng.lng));
-marker.on('dragend',()=>{const p=marker.getLatLng();setFromDisplay(p.lat,p.lng)});
-
-document.querySelectorAll('.layers button').forEach(b=>b.onclick=()=>{
-  const want=b.dataset.layer; if(want===mode)return;
-  const lat=parseFloat($('lat').value),lon=parseFloat($('lon').value);
-  tiles[mode].remove(); mode=want; tiles[mode].addTo(map);
-  document.querySelectorAll('.layers button').forEach(x=>x.classList.toggle('on',x===b));
-  if(Number.isFinite(lat)&&Number.isFinite(lon))setFromWgs(lat,lon,true);
-});
-
-// ---------- device I/O ----------
-const ENDPOINT='https://gs-loc.apple.com/wloc-settings/save';
-const out=(t,cls)=>{$('out').textContent=t; if(cls)$('out').dataset.k=cls};
-function pill(text,cls){const p=$('status');p.textContent=text;p.className='pill'+(cls?' '+cls:'')}
-
-async function call(params){
-  const url=ENDPOINT+'?'+new URLSearchParams(params).toString();
-  const r=await fetch(url,{cache:'no-store'});
-  return r.json();
-}
-async function refresh(quiet){
-  try{
-    const j=await call({action:'query'});
-    if(j.success){
-      pill('模块已生效','ok');
-      out(`当前生效坐标\n纬度 ${j.latitude}\n经度 ${j.longitude}\n精度 ${j.accuracy} m　扰动 ${j.randomRadius??0} m\n更新于 ${j.updatedAt||'—'}`);
-      if(!$('lat').value)setFromWgs(j.latitude,j.longitude,true);
-    }else{
-      pill('模块已生效','ok');
-      out('模块在，但设备里还没有保存过坐标。');
-    }
-  }catch(e){
-    pill('模块未生效','bad');
-    if(!quiet)out('连不上模块。请确认：小火箭代理已开启、wloc 模块已启用、HTTPS 解密已打开且证书已信任。');
-  }
-}
-$('save').onclick=async()=>{
-  const lat=parseFloat($('lat').value),lon=parseFloat($('lon').value);
-  if(!Number.isFinite(lat)||!Number.isFinite(lon))return out('先选一个位置。');
-  out('写入中…');
-  try{
-    const j=await call({action:'save',lat,lon,acc:parseInt($('acc').value||'25',10),randomRadius:parseFloat($('rnd').value||'0')});
-    if(j.success){pill('模块已生效','ok');
-      out(`已写入设备\n纬度 ${j.latitude}\n经度 ${j.longitude}\n精度 ${j.accuracy} m　扰动 ${j.randomRadius??0} m\n\n接下来：关掉定位服务等 10 秒再打开（iOS 26+ 需重启设备）。`);}
-    else out('写入失败：'+(j.error||'未知错误'));
-  }catch(e){pill('模块未生效','bad');out('写入失败，模块没拦到请求。检查代理开关 / 模块启用 / HTTPS 解密 / 证书信任。')}
-};
-$('query').onclick=()=>refresh(false);
-$('clear').onclick=async()=>{
-  out('清除中…');
-  try{const j=await call({action:'clear'});
-    out(j.success?'已清除保存的坐标。关开一次定位服务即可回到真实位置（iOS 26+ 需重启）。':'清除失败：'+(j.error||''))}
-  catch(e){out('清除失败，模块没拦到请求。')}
-};
-
-// ---------- search ----------
-$('go').onclick=async()=>{
-  const q=$('q').value.trim(); if(!q)return;
-  const m=q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[,，\s]\s*(-?\d+(?:\.\d+)?)\s*$/);
-  if(m){setFromWgs(parseFloat(m[1]),parseFloat(m[2]),true);return out('已定位到输入的坐标。')}
-  out('搜索中…');
-  try{
-    const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q));
-    const a=await r.json();
-    if(!a.length)return out('没找到这个地方。');
-    setFromWgs(parseFloat(a[0].lat),parseFloat(a[0].lon),true);
-    out('已定位：'+a[0].display_name);
-  }catch(e){out('搜索失败（网络或 Nominatim 限流）。')}
-};
-$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
-
-// ---------- favourites ----------
-const KEY='wloc_favs';
-const load=()=>{try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}};
-const store=v=>{try{localStorage.setItem(KEY,JSON.stringify(v))}catch{}};
-function drawFavs(){
-  const list=load(),box=$('favs');
-  if(!list.length){box.innerHTML='<div class="hint">还没有收藏。选好位置后点「收藏」。</div>';return}
-  box.innerHTML='';
-  list.forEach((f,i)=>{
-    const d=document.createElement('div');d.className='fav';
-    const s=document.createElement('span');s.textContent=`${f.name} (${(+f.lat).toFixed(4)}, ${(+f.lon).toFixed(4)})`;
-    const b1=document.createElement('button');b1.textContent='用';
-    b1.onclick=()=>{setFromWgs(f.lat,f.lon,true);$('acc').value=f.acc||25};
-    const b2=document.createElement('button');b2.textContent='删';
-    b2.onclick=()=>{const l=load();l.splice(i,1);store(l);drawFavs()};
-    d.append(s,b1,b2);box.appendChild(d);
-  });
-}
-$('star').onclick=()=>{
-  const lat=parseFloat($('lat').value),lon=parseFloat($('lon').value);
-  if(!Number.isFinite(lat)||!Number.isFinite(lon))return out('先选一个位置。');
-  const name=prompt('收藏名称','')||`${lat.toFixed(4)},${lon.toFixed(4)}`;
-  const l=load();l.unshift({name,lat,lon,acc:parseInt($('acc').value||'25',10)});store(l);drawFavs();
-};
-
-// ---------- 设备当前定位 ----------
-const devout=t=>{$('devout').textContent=t};
-let devMarker=null;
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371000,toR=x=>x*PI/180;
-  const dLat=toR(lat2-lat1),dLon=toR(lon2-lon1);
-  const a=Math.sin(dLat/2)**2+Math.cos(toR(lat1))*Math.cos(toR(lat2))*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(a));
-}
-const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(m<10000?2:0)+' km';
-$('locate').onclick=()=>{
-  if(!navigator.geolocation)return devout('此浏览器不支持定位。');
-  devout('定位中…（首次会弹出位置权限，请允许）');
-  navigator.geolocation.getCurrentPosition(p=>{
-    const {latitude:dl,longitude:dn,accuracy:da}=p.coords;
-    const [x,y]=toDisp(dl,dn);
-    if(devMarker)devMarker.remove();
-    devMarker=L.circleMarker([x,y],{radius:9,color:'#fff',weight:2,fillColor:'#d92c20',fillOpacity:.95}).addTo(map)
-      .bindPopup('<div class="dev-pop"><b>设备当前定位</b><br>'+dl.toFixed(6)+', '+dn.toFixed(6)+'<br>精度 '+Math.round(da)+' m</div>');
-    const tl=parseFloat($('lat').value),tn=parseFloat($('lon').value);
-    let msg='设备当前定位\n纬度 '+dl.toFixed(6)+'\n经度 '+dn.toFixed(6)+'\n定位精度 '+Math.round(da)+' m';
-    if(Number.isFinite(tl)&&Number.isFinite(tn)){
-      const d=haversine(dl,dn,tl,tn);
-      msg+='\n\n与目标点相距 '+fmtDist(d);
-      if(d<=Math.max(150,da*2))msg+='\n✅ 已生效';
-      else if(d<2000)msg+='\n⚠️ 接近但有偏差，可能是 GPS 在起作用，室内再试';
-      else msg+='\n❌ 未生效。去「设置 → 隐私与安全性 → 定位服务」关 10 秒再开；iOS 26+ 需重启设备。';
-      const grp=L.featureGroup([marker,devMarker]);
-      map.fitBounds(grp.getBounds().pad(0.4),{maxZoom:16});
-    }else{
-      map.setView([x,y],15);
-      msg+='\n\n（还没设目标点，无法比较）';
-    }
-    devout(msg);
-  },e=>{
-    const why={1:'你拒绝了位置权限。到「设置 → Safari → 位置」或「设置 → 隐私与安全性 → 定位服务 → Safari 网站」里改为允许。',2:'系统拿不到位置，定位服务可能是关着的。',3:'定位超时，再点一次。'}[e.code]||e.message;
-    devout('读取失败：'+why);
-  },{enableHighAccuracy:true,maximumAge:0,timeout:15000});
-};
-
-// ---------- URL 参数（供外部链接调用）----------
-// 例: /?lat=35.6586&lon=139.7454        仅定位到该点，手动点「储存到设备」
-//     /?lat=..&lon=..&auto=1            定位并自动写入设备
-//     /?lat=..&lon=..&gcj=1&auto=1      输入为 GCJ-02（高德/国内苹果地图），先转 WGS-84 再写入
-//     /?action=clear                    清除坐标（恢复真实定位）
-(async()=>{
-  const q=new URLSearchParams(location.search);
-  const la=parseFloat(q.get('lat')||q.get('latitude')), lo=parseFloat(q.get('lon')||q.get('lng')||q.get('longitude'));
-  if(q.get('acc'))$('acc').value=q.get('acc');
-  if(q.get('action')==='clear'){ $('clear').click(); return; }
-  if(Number.isFinite(la)&&Number.isFinite(lo)){
-    let lat=la,lon=lo;
-    if(q.get('gcj')==='1'){ [lat,lon]=gcj2wgs(la,lo); }
-    setFromWgs(lat,lon,true);
-    if(q.get('auto')==='1'){ await new Promise(r=>setTimeout(r,300)); $('save').click(); }
-    else out('已从链接载入坐标，确认后点「储存到设备」。');
-  }
-})();
-
-drawFavs();
-refresh(true);
+const UI_VERSION='2026.09.11-1';const ENDPOINT='https://gs-loc.apple.com/wloc-settings/save';const PI=Math.PI,A=6378245.0,EE=0.00669342162296594323;const $=id=>document.getElementById(id);$('uiVersion').textContent=UI_VERSION;
+let currentSaved=null,lastDevice=null,devMarker=null,centeredFromSaved=false;const out=t=>{$('out').textContent=t};const statusOut=t=>{$('statusOut').textContent=t};function setTextState(id,text,cls=''){const el=$(id);el.textContent=text;el.className=cls}function pill(text,cls=''){const p=$('status');p.textContent=text;p.className='pill'+(cls?' '+cls:'')}
+const outOfChina=(lat,lon)=>!(lon>73.66&&lon<135.05&&lat>3.86&&lat<53.55);function tLat(x,y){let r=-100+2*x+3*y+.2*y*y+.1*x*y+.2*Math.sqrt(Math.abs(x));r+=(20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;r+=(20*Math.sin(y*PI)+40*Math.sin(y/3*PI))*2/3;r+=(160*Math.sin(y/12*PI)+320*Math.sin(y*PI/30))*2/3;return r}function tLon(x,y){let r=300+x+2*y+.1*x*x+.1*x*y+.1*Math.sqrt(Math.abs(x));r+=(20*Math.sin(6*x*PI)+20*Math.sin(2*x*PI))*2/3;r+=(20*Math.sin(x*PI)+40*Math.sin(x/3*PI))*2/3;r+=(150*Math.sin(x/12*PI)+300*Math.sin(x/30*PI))*2/3;return r}function wgs2gcj(lat,lon){if(outOfChina(lat,lon))return[lat,lon];let dLat=tLat(lon-105,lat-35),dLon=tLon(lon-105,lat-35);const rad=lat/180*PI;let m=Math.sin(rad);m=1-EE*m*m;const sq=Math.sqrt(m);dLat=(dLat*180)/((A*(1-EE))/(m*sq)*PI);dLon=(dLon*180)/(A/sq*Math.cos(rad)*PI);return[lat+dLat,lon+dLon]}function gcj2wgs(lat,lon){if(outOfChina(lat,lon))return[lat,lon];let wLat=lat,wLon=lon;for(let i=0;i<3;i++){const[g1,g2]=wgs2gcj(wLat,wLon);wLat+=lat-g1;wLon+=lon-g2}return[wLat,wLon]}
+const tiles={osm:L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}),sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri'}),gaode:L.tileLayer('https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',{subdomains:'1234',maxZoom:19,attribution:'© 高德'})};let mode='osm';let initialView=[22.1987,113.5439],initialZoom=13;try{const v=JSON.parse(localStorage.getItem('wloc_view'));if(v&&Number.isFinite(v.lat)&&Number.isFinite(v.lon)){initialView=[v.lat,v.lon];initialZoom=v.zoom||13}}catch{}const map=L.map('map',{zoomControl:true}).setView(initialView,initialZoom);tiles.osm.addTo(map);const marker=L.marker(initialView,{draggable:true}).addTo(map);map.on('moveend',()=>{try{const c=map.getCenter();localStorage.setItem('wloc_view',JSON.stringify({lat:c.lat,lon:c.lng,zoom:map.getZoom()}))}catch{}});const isGcj=()=>mode==='gaode';const toWgs=(lat,lon)=>isGcj()?gcj2wgs(lat,lon):[lat,lon];const toDisp=(lat,lon)=>isGcj()?wgs2gcj(lat,lon):[lat,lon];function setFromDisplay(lat,lon){const[w1,w2]=toWgs(lat,lon);$('lat').value=w1.toFixed(6);$('lon').value=w2.toFixed(6);marker.setLatLng([lat,lon])}function setFromWgs(lat,lon,fly=false){$('lat').value=(+lat).toFixed(6);$('lon').value=(+lon).toFixed(6);const[d1,d2]=toDisp(+lat,+lon);marker.setLatLng([d1,d2]);if(fly)map.setView([d1,d2],Math.max(map.getZoom(),15))}map.on('click',e=>setFromDisplay(e.latlng.lat,e.latlng.lng));marker.on('dragend',()=>{const p=marker.getLatLng();setFromDisplay(p.lat,p.lng)});document.querySelectorAll('.layers button').forEach(b=>b.onclick=()=>{const want=b.dataset.layer;if(want===mode)return;const lat=parseFloat($('lat').value),lon=parseFloat($('lon').value);tiles[mode].remove();mode=want;tiles[mode].addTo(map);document.querySelectorAll('.layers button').forEach(x=>x.classList.toggle('on',x===b));if(Number.isFinite(lat)&&Number.isFinite(lon))setFromWgs(lat,lon,true)});
+async function call(params){const url=ENDPOINT+'?'+new URLSearchParams(params).toString();const r=await fetch(url,{cache:'no-store'});const text=await r.text();try{return JSON.parse(text)}catch{throw new Error('模块没有返回 JSON：'+text.slice(0,80))}}function savedFromJson(j){return{latitude:+j.latitude,longitude:+j.longitude,accuracy:+(j.accuracy||25),randomRadius:+(j.randomRadius||0),updatedAt:j.updatedAt||null}}function samePoint(a,b){if(!a||!b)return false;const alat=a.latitude??a.lat,alon=a.longitude??a.lon,blat=b.latitude??b.lat,blon=b.longitude??b.lon;return Math.abs(+alat-+blat)<0.00001&&Math.abs(+alon-+blon)<0.00001}function haversine(lat1,lon1,lat2,lon2){const R=6371000,toR=x=>x*PI/180;const dLat=toR(lat2-lat1),dLon=toR(lon2-lon1);const a=Math.sin(dLat/2)**2+Math.cos(toR(lat1))*Math.cos(toR(lat2))*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(a))}const fmtDist=m=>m<1000?Math.round(m)+' m':(m/1000).toFixed(m<10000?2:0)+' km';
+function updateGuide(){$('g1').checked=!!currentSaved;$('g1text').textContent=currentSaved?`已保存 ${currentSaved.latitude.toFixed(5)}, ${currentSaved.longitude.toFixed(5)}`:'尚未保存目标坐标'}const GUIDE_KEY='wloc_guide_steps';function loadGuide(){let s={};try{s=JSON.parse(localStorage.getItem(GUIDE_KEY))||{}}catch{}['g2','g3','g4','g5'].forEach(id=>{$(id).checked=!!s[id]})}function storeGuide(){const s={};['g2','g3','g4','g5'].forEach(id=>s[id]=$(id).checked);try{localStorage.setItem(GUIDE_KEY,JSON.stringify(s))}catch{}}['g2','g3','g4','g5'].forEach(id=>$(id).addEventListener('change',storeGuide));function resetGuide(afterSave=false){['g2','g3','g4','g5'].forEach(id=>$(id).checked=false);$('g6').checked=false;$('g6text').textContent='点击下方验证，自动比较系统定位与目标点。';try{localStorage.removeItem(GUIDE_KEY)}catch{}if(!afterSave)updateGuide()}$('guideReset').onclick=()=>resetGuide(false);
+function updateSummaryAfterQuery(){if(currentSaved){setTextState('targetState',`${currentSaved.latitude.toFixed(4)}, ${currentSaved.longitude.toFixed(4)}`,'ok');pill('坐标已保存','ok')}else{setTextState('targetState','未设置','warn');pill('模块已连接','ok')}updateGuide();drawFavs()}
+async function refresh(quiet=false){try{const j=await call({action:'query'});setTextState('moduleState','已连接','ok');if(j.success){currentSaved=savedFromJson(j);if(!centeredFromSaved){setFromWgs(currentSaved.latitude,currentSaved.longitude,true);$('acc').value=currentSaved.accuracy;$('rnd').value=currentSaved.randomRadius;centeredFromSaved=true}updateSummaryAfterQuery();const msg=`模块正常\n已保存目标：${currentSaved.latitude.toFixed(6)}, ${currentSaved.longitude.toFixed(6)}\n精度 ${currentSaved.accuracy} m · 扰动 ${currentSaved.randomRadius} m${currentSaved.updatedAt?'\n更新于 '+currentSaved.updatedAt:''}`;statusOut(msg);if(!quiet)out(msg)}else{currentSaved=null;updateSummaryAfterQuery();statusOut('模块正常，但尚未保存目标坐标。');if(!quiet)out('模块正常，但尚未保存目标坐标。')}}catch(e){currentSaved=null;setTextState('moduleState','未连接','bad');setTextState('targetState','未知','warn');pill('模块未生效','bad');statusOut('无法连接 WLOC 设置脚本。\n'+e.message);if(!quiet)out('无法连接 WLOC 模块。确认 Surge 脚本、MitM 与 CA 信任均已开启。');updateGuide();drawFavs()}}
+async function saveTarget(lat,lon,acc,rnd,source='手动'){if(!Number.isFinite(lat)||!Number.isFinite(lon)){out('先选一个位置。');return false}out('写入中…');try{const j=await call({action:'save',lat,lon,acc:acc||25,randomRadius:Number.isFinite(rnd)?rnd:0});if(!j.success){out('写入失败：'+(j.error||'未知错误'));return false}currentSaved=savedFromJson(j);currentSaved.updatedAt=j.updatedAt||new Date().toISOString();setFromWgs(currentSaved.latitude,currentSaved.longitude,true);$('acc').value=currentSaved.accuracy;$('rnd').value=currentSaved.randomRadius;setTextState('moduleState','已连接','ok');updateSummaryAfterQuery();lastDevice=null;setTextState('deviceState','未验证','');resetGuide(true);updateGuide();const msg=`${source}已写入设备\n纬度 ${currentSaved.latitude.toFixed(6)}\n经度 ${currentSaved.longitude.toFixed(6)}\n精度 ${currentSaved.accuracy} m · 扰动 ${currentSaved.randomRadius} m\n\niOS 26+ 建议按下方向导重启后再验证。`;out(msg);statusOut(msg);drawFavs();return true}catch(e){setTextState('moduleState','异常','bad');pill('模块未生效','bad');out('写入失败：'+e.message);return false}}
+$('save').onclick=()=>saveTarget(parseFloat($('lat').value),parseFloat($('lon').value),parseInt($('acc').value||'25',10),parseFloat($('rnd').value||'0'),'目标坐标');$('query').onclick=()=>refresh(false);$('clear').onclick=async()=>{out('清除中…');try{const j=await call({action:'clear'});if(!j.success){out('清除失败：'+(j.error||'未知错误'));return}currentSaved=null;lastDevice=null;setTextState('targetState','未设置','warn');setTextState('deviceState','未验证','');pill('模块已连接','ok');statusOut('已清除保存坐标，WLOC 将透传真实定位。iOS 26+ 建议重启以清缓存。');out('已清除保存坐标。iOS 26+ 建议重启设备清理定位缓存。');resetGuide(false);drawFavs()}catch(e){out('清除失败：'+e.message)}};
+async function verifyDevice(){if(!navigator.geolocation){statusOut('此浏览器不支持定位。');return false}setTextState('deviceState','定位中…','warn');statusOut('正在读取 iPhone 当前系统定位…');return new Promise(resolve=>{navigator.geolocation.getCurrentPosition(p=>{const{latitude:dl,longitude:dn,accuracy:da}=p.coords;lastDevice={latitude:dl,longitude:dn,accuracy:da,at:new Date()};const[x,y]=toDisp(dl,dn);if(devMarker)devMarker.remove();devMarker=L.circleMarker([x,y],{radius:9,color:'#fff',weight:2,fillColor:'#d92c20',fillOpacity:.95}).addTo(map).bindPopup(`<div class="dev-pop"><b>设备当前定位</b><br>${dl.toFixed(6)}, ${dn.toFixed(6)}<br>精度 ${Math.round(da)} m</div>`);if(!currentSaved){setTextState('deviceState','已读取','ok');statusOut(`设备当前定位：${dl.toFixed(6)}, ${dn.toFixed(6)}\n精度 ${Math.round(da)} m\n尚未保存 WLOC 目标，无法判断是否切换。`);$('g6').checked=false;resolve(false);return}const d=haversine(dl,dn,currentSaved.latitude,currentSaved.longitude);const threshold=Math.max(150,da*2);const effective=d<=threshold;if(effective){setTextState('deviceState','已切换','ok');$('g6').checked=true;$('g6text').textContent=`系统定位距目标 ${fmtDist(d)}，判定已生效。`}else if(d<2000){setTextState('deviceState','有偏差','warn');$('g6').checked=false;$('g6text').textContent=`距目标 ${fmtDist(d)}；可能仍受 GPS 或缓存影响。`}else{setTextState('deviceState','未切换','bad');$('g6').checked=false;$('g6text').textContent=`距目标 ${fmtDist(d)}；建议完整执行重启向导。`}statusOut(`设备当前定位：${dl.toFixed(6)}, ${dn.toFixed(6)}\n定位精度 ${Math.round(da)} m\n已保存目标：${currentSaved.latitude.toFixed(6)}, ${currentSaved.longitude.toFixed(6)}\n距离 ${fmtDist(d)}\n${effective?'✓ 系统定位已切换到目标附近':d<2000?'△ 接近目标但仍有偏差，室内/GPS 较弱环境再试':'✕ 系统定位仍未切换'}`);const grp=L.featureGroup([marker,devMarker]);map.fitBounds(grp.getBounds().pad(0.4),{maxZoom:16});resolve(effective)},e=>{const why={1:'位置权限被拒绝。请允许 Safari 网站访问位置。',2:'系统拿不到位置，定位服务可能关闭。',3:'定位超时，请再试一次。'}[e.code]||e.message;setTextState('deviceState','读取失败','bad');statusOut('读取设备定位失败：'+why);resolve(false)},{enableHighAccuracy:true,maximumAge:0,timeout:15000})})}$('locate').onclick=verifyDevice;$('guideVerify').onclick=verifyDevice;
+$('go').onclick=async()=>{const q=$('q').value.trim();if(!q)return;const m=q.match(/^\s*(-?\d+(?:\.\d+)?)\s*[,，\s]\s*(-?\d+(?:\.\d+)?)\s*$/);if(m){setFromWgs(parseFloat(m[1]),parseFloat(m[2]),true);return out('已定位到输入的坐标，确认后点“写入设备”。')}out('搜索中…');try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q));const a=await r.json();if(!a.length)return out('没找到这个地方。');setFromWgs(parseFloat(a[0].lat),parseFloat(a[0].lon),true);out('已定位：'+a[0].display_name+'\n确认后点“写入设备”。')}catch(e){out('搜索失败（网络或 Nominatim 限流）。')}};$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+const FAV_KEY='wloc_favs';const loadFavs=()=>{try{return JSON.parse(localStorage.getItem(FAV_KEY))||[]}catch{return[]}};const storeFavs=v=>{try{localStorage.setItem(FAV_KEY,JSON.stringify(v))}catch{}};function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function drawFavs(){const list=loadFavs(),box=$('favs');if(!list.length){box.innerHTML='<div class="hint">还没有收藏。选好位置后点“收藏”。</div>';return}box.innerHTML='';list.forEach((f,i)=>{const d=document.createElement('div');d.className='fav';const main=document.createElement('button');main.className='fav-main';const active=samePoint({latitude:f.lat,longitude:f.lon},currentSaved);main.innerHTML=`<div class="fav-title"><span class="fav-name">${escapeHtml(f.name)}</span>${active?'<span class="pill ok">当前</span>':''}</div><div class="fav-coord">${(+f.lat).toFixed(5)}, ${(+f.lon).toFixed(5)}</div>`;main.onclick=()=>{setFromWgs(f.lat,f.lon,true);$('acc').value=f.acc||25;$('rnd').value=f.rnd||0;out('已预览收藏“'+f.name+'”。点“使用”可直接写入设备。')};const use=document.createElement('button');use.className='small '+(active?'':'primary');use.textContent=active?'当前':'使用';use.disabled=active;use.onclick=async()=>{setFromWgs(f.lat,f.lon,true);$('acc').value=f.acc||25;$('rnd').value=f.rnd||0;await saveTarget(+f.lat,+f.lon,+(f.acc||25),+(f.rnd||0),'收藏“'+f.name+'”')};const del=document.createElement('button');del.className='small';del.textContent='删';del.onclick=()=>{const l=loadFavs();l.splice(i,1);storeFavs(l);drawFavs()};d.append(main,use,del);box.appendChild(d)})}$('star').onclick=()=>{const lat=parseFloat($('lat').value),lon=parseFloat($('lon').value);if(!Number.isFinite(lat)||!Number.isFinite(lon))return out('先选一个位置。');const name=prompt('收藏名称','')||`${lat.toFixed(4)},${lon.toFixed(4)}`;let l=loadFavs().filter(f=>Math.abs(+f.lat-lat)>=0.00001||Math.abs(+f.lon-lon)>=0.00001);l.unshift({name,lat,lon,acc:parseInt($('acc').value||'25',10),rnd:parseFloat($('rnd').value||'0')});storeFavs(l);drawFavs();out('已收藏“'+name+'”。')};
+(async()=>{const q=new URLSearchParams(location.search);const la=parseFloat(q.get('lat')||q.get('latitude')),lo=parseFloat(q.get('lon')||q.get('lng')||q.get('longitude'));if(q.get('acc'))$('acc').value=q.get('acc');if(q.get('rnd'))$('rnd').value=q.get('rnd');if(q.get('action')==='clear'){$('clear').click();return}if(Number.isFinite(la)&&Number.isFinite(lo)){let lat=la,lon=lo;if(q.get('gcj')==='1')[lat,lon]=gcj2wgs(la,lo);setFromWgs(lat,lon,true);if(q.get('auto')==='1'){await new Promise(r=>setTimeout(r,300));$('save').click()}else out('已从链接载入坐标，确认后点“写入设备”。')}})();
+const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;if(!standalone)$('installCard').style.display='block';if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(r=>r.update()).catch(()=>{}))}fetch('./upstream-version.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(v=>{if(v&&v.commit)$('upstreamInfo').textContent=`核心脚本 ${v.repository} · ${v.commit.slice(0,7)} · ${v.syncedAt||''}`}).catch(()=>{});const m=navigator.userAgent.match(/OS (\d+)_/);if(m&&+m[1]>=26)$('guideHint').textContent='检测到 iOS '+m[1]+'：建议写入目标后完整执行一次重启向导；强 GPS 环境可能覆盖网络定位。';loadGuide();drawFavs();refresh(true);
 </script>
 </body>
 </html>
